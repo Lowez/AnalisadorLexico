@@ -29,3 +29,12 @@ main {
 .insere-palavras, .busca-palavras {
     position: absolute;
 }
+
+#savedWords {
+    padding: 1em 10em;
+}
+
+#savedWords span {
+    margin: 0.2em;
+    font-size: 14px;
+}
