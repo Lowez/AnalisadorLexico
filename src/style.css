@@ -1,0 +1,31 @@
+html {
+    height: 100%;
+    width: 100%;
+    background-color: rgb(52, 57, 66);
+}
+
+header {
+    display: flex;
+    justify-content: center;
+    background-color: rgb(37, 39, 43);
+}
+
+header h1 {
+    padding: 0.2em;
+}
+
+main {
+    background-color: rgb(52, 57, 66);
+    background-size: auto;
+    min-height: 100%;
+}
+
+.words-inputs {
+    display: flex;
+    justify-content: space-between;
+    padding: 1em 10em;
+}
+
+.insere-palavras, .busca-palavras {
+    position: absolute;
+}
