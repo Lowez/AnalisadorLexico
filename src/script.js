@@ -1,12 +1,18 @@
 let palavras = [];
+let colors= ['primary', 'info','warning', 'danger', 'success', 'success', 'secondary']
 
 $(document).ready(function() {
     $('#addWord').click(function() {
         let palavraNova = $('#addWordInput').val()
+        if (palavraNova == '') {
+            return;
+        }
+
         palavras.push(palavraNova);
-        console.log(palavras)
-        $('#addWordInput').val('');
+        
         listWords(palavraNova);
+        
+        $('#addWordInput').val('');
     });
 
     $('#searchWord').click(function() {
@@ -16,5 +22,8 @@ $(document).ready(function() {
 });
 
 function listWords(palavraNova) {
-    $("#savedWords").append(`<span class="badge rounded-pill text-bg-primary">${palavraNova}</span>`);
+    let colorIndex = Math.floor(Math.random() * colors.length);
+    let color = colors[colorIndex]
+    console.log(color)
+    $("#savedWords").append(`<span class="badge rounded-pill text-bg-${color}">${palavraNova}</span>`);
 }

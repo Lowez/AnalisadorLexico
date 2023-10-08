@@ -22,8 +22,8 @@ main {
 
 .words-inputs {
     display: flex;
-    justify-content: space-between;
-    padding: 1em 10em;
+    justify-content: space-around;
+    padding: 1em 20em 1em 20em;
 }
 
 .insere-palavras, .busca-palavras {
@@ -31,7 +31,7 @@ main {
 }
 
 #savedWords {
-    padding: 1em 10em;
+    padding: 1em 30em;
 }
 
 #savedWords span {
