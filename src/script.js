@@ -1,84 +1,89 @@
+// Inicialização das variáveis e constantes que serão utilizadas
 let palavras = [];
 let foundWords = [];
 let palavrasQtd = 0;
 let eventosNumbers = [];
 fillEventosNumbers();
-let currentEventoIndex = 1;
+let currentEventoIndex = 0;
 
 const colors= ['primary', 'info','warning', 'danger', 'success', 'secondary']
 const alfabeto = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 
+let automato = [];
+/*
+automato = [
+    {
+        letra: 'a',
+        eventos: ['q0 to q1', 'q7 to q5'], *return, rude*
+        qtd: 2
+    }
+];
+*/
+
 $(document).ready(function() {
-    $('#addWord').click(function() {
+    // Adicionando palavras ao banco de palavras assim que o botão de adicionar uma palavra é pressionado
+    $('#addWord').click(function(event) {
+        event.preventDefault();
+
         let palavraNova = $('#addWordInput').val()
         if (palavraNova == '') {
             return;
         }
 
-        let palavra = [];
-
-        // for (let i = 0; i < palavraNova.length; i++) {
-        //     palavras.push({
-        //         letra: palavraNova[i],
-        //         evento: 'q' + eventosNumbers[currentEventoIndex]
-        //     });
-        //     currentEventoIndex++;
-        // }
-
+        // Adiciona a palavra no array de palavras
         palavras.push(palavraNova)
 
-        // palavras.push(palavra);
         palavrasQtd++;
         
         listSavedWord(palavraNova);
-
-        if (palavrasQtd == 1) {
-            createTable();
-        }
         
         $('#addWordInput').val('');
+
+        addWordToAutomato(palavraNova);
+
+        // Cria a tabela caso seja a primeira palavra a ser adicionada
+        if (palavrasQtd == 1) {
+            createTable();
+        } else {
+            updateTable();
+        }
     });
 
+    // Busca a palavra digitada ao banco de palavras assim que o botão de adicionar uma palavra é pressionado
     $('#searchWord').click(function(word = "") {
         console.log("Palavra buscada")
         $('#searchWordInput').val('');
     });
 
-    $("#searchWordInput").bind("keyup", function() {
+    // Validação em tempo real das palavras digitadas no campo de busca
+    $("#searchWordInput").on("input", function() {
         let palavraDigitada = $(this).val();
-
-        if (palavraDigitada == "") {
-            $("#searchWordInput").css("box-shadow", "none !important")
+        if (palavraDigitada === "") {
+            $("#foundWords").empty();
+            $("#searchWordInput").css("box-shadow", "none");
+            return;
         }
 
-        palavras.forEach(palavra => {
-            if (palavra.includes(palavraDigitada)) {
-                let exists = foundWords.filter(el => el == palavra)
-                console.log(exists)
-                $("#searchWordInput").css("box-shadow", "5px 5px 20px 10px green")
-                if (exists.length == 0) {
-                    foundWords.push(palavra)
-                }
-            } else {
-                let exists = foundWords.filter(el => el == palavra)
-                if (exists.length > 0) {
-                    let exceptions = foundWords.filter(el => el !== palavra)
-                    foundWords = exceptions
-                }
-                $("#searchWordInput").css("box-shadow", "5px 5px 20px 10px red")
-            }
-        })
-        
-        listFoundedWord()
+        // Filtra as palavras que iniciam com a palavra digitada
+        let filteredWords = palavras.filter(palavra => palavra.startsWith(palavraDigitada));
+
+        // Mostra o campo em vermelho caso não encontre nenhuma palavra valida, se não deixa verde e mostra as encontradas
+        if (filteredWords.length == 0) {
+            $("#foundWords").empty();
+            $("#searchWordInput").css("box-shadow", "5px 5px 20px 10px red")
+            return;
+        } else {
+            $("#foundWords").empty();
+            $("#searchWordInput").css("box-shadow", "5px 5px 20px 10px green")
+            $("#foundWords").append(`<h5 class="text-light">Palavras Possíveis</h5>`);
+
+            let color = colors[4];
+            filteredWords.forEach(palavra => {
+                $("#foundWords").append(`<span class="badge rounded-pill text-bg-${color}">${palavra}</span>`);
+            });
+        }
      });
 });
-
-function listFoundedWord() {
-    let color = colors[4]
-    foundWords.forEach(palavra => {
-        $("#foundWords").append(`<span class="badge rounded-pill text-bg-${color}">${palavra}</span>`);
-    })
-}
 
 function listSavedWord(palavraNova) {
     let colorIndex = Math.floor(Math.random() * colors.length);
@@ -92,13 +97,27 @@ function fillEventosNumbers() {
     }
 }
 
-function createTable() {
-    const data = [
-        { letra: 'a', evento: 'q1' },
-        { letra: 'b', evento: 'q2' },
-        { letra: 'c', evento: 'q3' }
-    ];
+function addWordToAutomato(palavra) {
+    for (let i = 0; i < palavra.length; i++) {
+        let index = automato.findIndex(automato => automato.letra == palavra[i]);
 
+        if (index == -1) {
+            automato.push({
+                letra: palavra[i],
+                eventos: [`q${currentEventoIndex} to q${currentEventoIndex + 1}`],
+                qtd: 1
+            });
+        } else {
+            automato[index].eventos.push(`q${currentEventoIndex} to q${currentEventoIndex + 1}`)
+            automato[index].qtd++;
+        }
+        currentEventoIndex++;
+    }
+
+    console.log(automato)
+}
+
+function createTable() {
     // Seleciona o contêiner onde a tabela será inserida
     const tableContainer = $('#automato');
 
@@ -115,17 +134,25 @@ function createTable() {
 
     // Preenche a tabela com os dados
     const tbody = $('<tbody>');
-    palavras.forEach((item, index) => {
-        const row = $('<tr>');
-        row.append($('<th>').text(index + 1)); // Adiciona o índice
-        alfabeto.forEach(letra => {
-            const valor = letra === item.letra ? item.evento : ''; // Obtém o valor do evento se a letra corresponder
-            row.append($('<td>').text(valor));
-        });
-        tbody.append(row);
+    automato.forEach((item, index) => {
+        console.log(item)
+        if (item.qtd > 0) {
+            const row = $('<tr>');
+            const qs = item.eventos[0].split(" to ")
+            row.append($('<th>').text(qs[0])); // Adiciona o índice
+            alfabeto.forEach(letra => {
+                const valor = letra === item.letra ? qs[1] : ''; // Obtém o valor do evento se a letra corresponder
+                row.append($('<td>').text(valor));
+            });
+            tbody.append(row);
+        }
     });
     table.append(tbody);
 
     // Adiciona a tabela ao contêiner
     tableContainer.append(table);
+}
+
+function updateTable() {
+
 }

@@ -40,6 +40,10 @@ main {
     /* margin: 1em 6% 1em 10%; */
 }
 
+#foundWords {
+    margin-top: 1em;
+}
+
 #savedWords span, #foundWords span {
     margin: 0.2em;
     font-size: 14px;

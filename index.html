@@ -20,21 +20,25 @@
             <div class="card insere-palavras border border-white bg-dark" style="width: 40rem;">
                 <div id="addCard" class="card-body">
                     <h5 class="card-title text-light">Adicionar Palavras</h5>
-                    <div class="input-group mb-3">
-                        <input id="addWordInput" type="text" class="form-control" placeholder="Ex.: return" aria-label="Username" aria-describedby="basic-addon1" required>
-                    </div>
-                    <input id="addWord" type="submit" class="btn btn-primary"  style="width: 10rem;" value="Adicionar">
+                    <form>
+                        <div class="input-group mb-3">
+                            <input id="addWordInput" type="text" class="form-control" placeholder="Ex.: return" aria-label="Username" aria-describedby="basic-addon1" required>
+                        </div>
+                        <input id="addWord" type="submit" class="btn btn-primary"  style="width: 10rem;" value="Adicionar">
+                    </form>
                   </div>
             </div>
             <div class="card busca-palavras border border-white bg-dark" style="width: 40rem;">
                 <div id="searchCard" class="card-body">
                     <h5 class="card-title text-light">Validar Palavras</h5>
-                    <div class="input-group mb-3">
-                        <input id="searchWordInput"  type="text" class="form-control" placeholder="Ex.: return" aria-label="Username" aria-describedby="basic-addon1" required>
-                    </div>
-                    <input id="searchWord" type="submit" class="btn btn-primary"  style="width: 10rem;" value="Buscar">
+                    <form>
+                        <div class="input-group mb-3">
+                            <input id="searchWordInput"  type="text" class="form-control" placeholder="Ex.: return" aria-label="Username" aria-describedby="basic-addon1">
+                        </div>
+                        <input id="searchWord" type="submit" class="btn btn-primary"  style="width: 10rem;" value="Buscar">
+                    </form>
                     <div id="foundWords">
-
+                        <!-- <h5 class="text-light">Palavras Encontradas</h5> -->
                     </div>
                 </div>
             </div>
