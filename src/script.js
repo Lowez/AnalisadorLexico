@@ -1,10 +1,11 @@
 let palavras = [];
+let foundWords = [];
 let palavrasQtd = 0;
 let eventosNumbers = [];
 fillEventosNumbers();
 let currentEventoIndex = 1;
 
-const colors= ['primary', 'info','warning', 'danger', 'success', 'success', 'secondary']
+const colors= ['primary', 'info','warning', 'danger', 'success', 'secondary']
 const alfabeto = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 
 $(document).ready(function() {
@@ -16,20 +17,20 @@ $(document).ready(function() {
 
         let palavra = [];
 
-        for (let i = 0; i < palavraNova.length; i++) {
-            palavras.push({
-                letra: palavraNova[i],
-                evento: 'q' + eventosNumbers[currentEventoIndex]
-            });
-            currentEventoIndex++;
-        }
+        // for (let i = 0; i < palavraNova.length; i++) {
+        //     palavras.push({
+        //         letra: palavraNova[i],
+        //         evento: 'q' + eventosNumbers[currentEventoIndex]
+        //     });
+        //     currentEventoIndex++;
+        // }
 
-        console.log(palavras)
+        palavras.push(palavraNova)
 
         // palavras.push(palavra);
         palavrasQtd++;
         
-        listWord(palavraNova);
+        listSavedWord(palavraNova);
 
         if (palavrasQtd == 1) {
             createTable();
@@ -43,14 +44,43 @@ $(document).ready(function() {
         $('#searchWordInput').val('');
     });
 
-    $("#searchWordInput").bind("change paste keyup", function() {
-        let letraDigitada = $(this).val();
+    $("#searchWordInput").bind("keyup", function() {
+        let palavraDigitada = $(this).val();
 
+        if (palavraDigitada == "") {
+            $("#searchWordInput").css("box-shadow", "none !important")
+        }
+
+        palavras.forEach(palavra => {
+            if (palavra.includes(palavraDigitada)) {
+                let exists = foundWords.filter(el => el == palavra)
+                console.log(exists)
+                $("#searchWordInput").css("box-shadow", "5px 5px 20px 10px green")
+                if (exists.length == 0) {
+                    foundWords.push(palavra)
+                }
+            } else {
+                let exists = foundWords.filter(el => el == palavra)
+                if (exists.length > 0) {
+                    let exceptions = foundWords.filter(el => el !== palavra)
+                    foundWords = exceptions
+                }
+                $("#searchWordInput").css("box-shadow", "5px 5px 20px 10px red")
+            }
+        })
         
+        listFoundedWord()
      });
 });
 
-function listWord(palavraNova) {
+function listFoundedWord() {
+    let color = colors[4]
+    foundWords.forEach(palavra => {
+        $("#foundWords").append(`<span class="badge rounded-pill text-bg-${color}">${palavra}</span>`);
+    })
+}
+
+function listSavedWord(palavraNova) {
     let colorIndex = Math.floor(Math.random() * colors.length);
     let color = colors[colorIndex]
     $("#savedWords").append(`<span class="badge rounded-pill text-bg-${color}">${palavraNova}</span>`);
@@ -64,13 +94,13 @@ function fillEventosNumbers() {
 
 function createTable() {
     const data = [
-        { nome: 'João', idade: 25, cidade: 'São Paulo' },
-        { nome: 'Maria', idade: 30, cidade: 'Rio de Janeiro' },
-        { nome: 'Carlos', idade: 22, cidade: 'Belo Horizonte' }
+        { letra: 'a', evento: 'q1' },
+        { letra: 'b', evento: 'q2' },
+        { letra: 'c', evento: 'q3' }
     ];
 
     // Seleciona o contêiner onde a tabela será inserida
-    const tableContainer = $('.container');
+    const tableContainer = $('#automato');
 
     // Cria a tabela com classes Bootstrap
     const table = $('<table>').addClass('table table-striped-columns');
