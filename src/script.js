@@ -10,15 +10,6 @@ const colors= ['primary', 'info','warning', 'danger', 'success', 'secondary']
 const alfabeto = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 
 let automato = [];
-/*
-automato = [
-    {
-        letra: 'a',
-        eventos: ['q0 to q1', 'q7 to q5'], *return, rude*
-        qtd: 2
-    }
-];
-*/
 
 $(document).ready(function() {
     // Adicionando palavras ao banco de palavras assim que o botão de adicionar uma palavra é pressionado

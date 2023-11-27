@@ -57,3 +57,23 @@ main {
     font-size: 14px;
     width: 1%;
 }
+
+#automato tr.green{
+    background-color: greenyellow;
+}
+
+#automato tr.red{
+    background-color: red;
+}
+
+#automato tr.current_step{
+    border: 2px solid #0046a8;
+}
+
+#automato tr td.empty{
+    font-size: 12px;
+}
+
+#automato tr td.step{
+    font-weight: 700;
+}
