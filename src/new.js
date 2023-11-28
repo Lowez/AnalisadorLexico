@@ -25,7 +25,7 @@ $(document).ready(function() {
     });
 
     // Validação em tempo real das palavras digitadas no campo de busca
-    $("#searchWordInput").on("input", function(e) {
+    $("#searchWordInput").on("keydown keyup input", function(e) {
         let palavraDigitada = $(this).val();
         if (palavraDigitada === "") {
             $("#foundWords").empty();
@@ -37,22 +37,23 @@ $(document).ready(function() {
         let filteredWords = palavras.filter(palavra => palavra.startsWith(palavraDigitada));
 
         // Mostra o campo em vermelho caso não encontre nenhuma palavra valida, se não deixa verde e mostra as encontradas
-        if (filteredWords.length == 0) {
-            $("#foundWords").empty();
-            $("#searchWordInput").css("box-shadow", "5px 5px 20px 10px red")
-            return;
-        } else {
-            $("#foundWords").empty();
-            $("#searchWordInput").css("box-shadow", "5px 5px 20px 10px green")
-            $("#foundWords").append(`<h5 class="text-light">Palavras Possíveis</h5>`);
-
-            let color = colors[4];
-            filteredWords.forEach(palavra => {
-                $("#foundWords").append(`<span class="badge rounded-pill text-bg-${color}">${palavra}</span>`);
-            });
+        if (e.which !== 32) {
+            if (filteredWords.length == 0) {
+                $("#foundWords").empty();
+                $("#searchWordInput").css("box-shadow", "5px 5px 20px 10px red")
+            } else {
+                $("#foundWords").empty();
+                $("#searchWordInput").css("box-shadow", "5px 5px 20px 10px green")
+                $("#foundWords").append(`<h5 class="text-light">Palavras Possíveis</h5>`);
+    
+                let color = colors[4];
+                filteredWords.forEach(palavra => {
+                    $("#foundWords").append(`<span class="badge rounded-pill text-bg-${color}">${palavra}</span>`);
+                });
+            }
         }
 
-        validate($(this), palavraDigitada, e.keyCode);
+        validate(palavraDigitada, e.which);
      });
 });
 
@@ -72,13 +73,12 @@ function addWordToAutomato(palavraNova) {
             }
             alphabet = setAlphabet();
             createTable(alphabet);
-
-            
         }
     }
 }
 
-function createTable(alphabet){
+function createTable(){
+    $('#automato').empty();
     // Seleciona o contêiner onde a tabela será inserida
     const tableContainer = $('#automato');
     const table = $('<table>').addClass('table table-striped-columns');
@@ -137,13 +137,13 @@ function createTable(alphabet){
     tableContainer.append(table);
 }
 
-function validate(input, validate, last){
+function validate(validate, last){
     //Se for válido, Espaço, Backspace ou Del
     if(validate || last == 32 || last == 8 || last == 46){
         if(palavras.length > 0){
             //Limpa CSS linhas
-            $("#automato tr").removeClass('green');
-            $("#automato tr").removeClass('red');
+            $("#automato tr").removeClass('table-success');
+            $("#automato tr").removeClass('table-danger');
             $("#automato tr").removeClass('current_step');
 
             let currentStep = 0;
@@ -157,12 +157,12 @@ function validate(input, validate, last){
                     if(letra.charCodeAt(0) >= firstLetter.charCodeAt(0) && letra.charCodeAt(0) <= lastLetter.charCodeAt(0)){
                         if(alphabet[currentStep][letra] != '-'){
                             $("#automato tr").removeClass('current_step');
-                            $(`.step_${currentStep}`).addClass('green');
+                            $(`.step_${currentStep}`).addClass('table-success');
                             $(`.step_${currentStep}`).addClass('current_step');
                             currentStep = alphabet[currentStep][letra];
                         } else {
                             error = true;
-                            $(`.step_${currentStep}`).addClass('red');
+                            $(`.step_${currentStep}`).addClass('table-danger');
                         }
                     }
 
@@ -171,17 +171,24 @@ function validate(input, validate, last){
                         if(i == validate.length-1){
                             if(alphabet[currentStep]['end']){
                                 $("#automato tr").removeClass('current_step');
-                                $(`.step_${currentStep}`).addClass('green');
+                                $(`.step_${currentStep}`).addClass('table-success');
                                 $(`.step_${currentStep}`).addClass('current_step');
                             } else {
                                 error = true;
-                                $(`.step_${currentStep}`).addClass('red');
+                                $(`.step_${currentStep}`).addClass('table-danger');
                             }
-                            input.val('');
+                            // input.val('');
+                            //Limpa CSS linhas
+                            // $("#searchWordInput").css("box-shadow", "none")
                         }
                     }
                 }
             }
+        } else {
+            //Limpa CSS linhas
+            $("#automato tr").removeClass('table-success');
+            $("#automato tr").removeClass('table-danger');
+            $("#automato tr").removeClass('current_step');
         }
     }
 }

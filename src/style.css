@@ -59,11 +59,11 @@ main {
 }
 
 #automato tr.green{
-    background-color: greenyellow;
+    background-color: greenyellow !important;
 }
 
 #automato tr.red{
-    background-color: red;
+    background-color: red !important;
 }
 
 #automato tr.current_step{
