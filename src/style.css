@@ -66,14 +66,6 @@ main {
     background-color: red !important;
 }
 
-#automato tr.current_step{
+#automato tr.actual-state{
     border: 2px solid #0046a8;
-}
-
-#automato tr td.empty{
-    font-size: 12px;
-}
-
-#automato tr td.step{
-    font-weight: 700;
 }
