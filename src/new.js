@@ -182,21 +182,21 @@ function listSavedWord(palavraNova) {
 function setAutomato(){
     $('#automato').empty();
     // Seleciona o contêiner onde a tabela será inserida
-    const tableContainer = $('#automato');
-    const table = $('<table>').addClass('table table-striped-columns');
+    const automato = $('#automato');
+    const automatoTable = $('<table>').addClass('table table-striped-columns');
 
     // Cria o cabeçalho da tabela
     const tr = $('<tr>');
     tr.append($('<th>').text('#'));
 
-    table.append($('<thead>').append(tr));
+    automatoTable.append($('<thead>').append(tr));
 
     // População das colunas com a letra respectiva no header
     alfabeto.forEach(letra => {
         // Adiciona um cabeçalho para cada letra do alfabeto
         tr.append($('<th>').text(letra));
     });
-    table.append($('<thead>').append(tr));
+    automatoTable.append($('<thead>').append(tr));
 
     // Preenche a tabela com os dados
     const tbody = $('<tbody>');
@@ -240,13 +240,13 @@ function setAutomato(){
 
             tr.append(letterPlace);
         }
-        table.append(tbody);
+        automatoTable.append(tbody);
 
-        table.append(tr);
+        automatoTable.append(tr);
     }
 
     // Adiciona a tabela ao contêiner
-    tableContainer.append(table);
+    automato.append(automatoTable);
 }
 
 /*
