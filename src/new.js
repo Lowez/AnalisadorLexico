@@ -14,12 +14,12 @@ const apagar = 8;
 
 let automatoProprieties = {
     'palavras': [],
-    'automatoMaquete': [],
+    'automato': [],
     // Números do evento, para guiar o automato, q0, q1, q2, q3, ...
     'qNum': 0,
 }
 
-let automato = [
+let automatoMaquete = [
     []
 ];
 
@@ -41,21 +41,21 @@ $(document).ready(function() {
             // Gera o esqueleto que formará o automato, os estados e cada letra associada
             let maquete = [];
 
-            for(let i = 0; i < automato.length; i++){
+            for(let i = 0; i < automatoMaquete.length; i++){
                 let tableCell = [];
                 tableCell['qX'] = i;
 
                 for(let j = a; j <= z; j++){
                     let letra = String.fromCharCode(j);
 
-                    if(!(letra in automato[i])){
-                        tableCell[letra] = '-';
+                    if(!(letra in automatoMaquete[i])){
+                        tableCell[letra] = null;
                     } else {
-                        tableCell[letra] = automato[i][letra];
+                        tableCell[letra] = automatoMaquete[i][letra];
                     }
                 }
 
-                if(automato[i]['endState']){
+                if(automatoMaquete[i]['endState']){
                     tableCell['endState'] = true;
                 } else {
                     tableCell['endState'] = false;
@@ -63,11 +63,13 @@ $(document).ready(function() {
                 maquete.push(tableCell);
             }
 
-            automatoProprieties.automatoMaquete = maquete;
+            automatoProprieties.automato = maquete;
             setAutomato();
         }
 
         palavraElement.val('');
+        $("#searchWordInput").css("box-shadow", "none");
+        $("#searchWordInput").val('')
     });
 
     // Validação em tempo real das palavras digitadas no campo de busca
@@ -125,7 +127,7 @@ function addWordToAutomato(palavraNova) {
     palavraNova = palavraNova.trim();
     
     // Não permite nenhum caractere que não seja letras ou se a palavra estiver vazia
-    if (palavraNova.length > 0 && /^[A-Za-z\s]*$/.test(palavraNova)) {
+    if (palavraNova.length > 0 && /^[a-z\s]*$/.test(palavraNova)) {
         listSavedWord(palavraNova);
 
         // Adiciona a palavra nova em um array junto com as outras
@@ -141,26 +143,25 @@ function addWordToAutomato(palavraNova) {
     
                 // Valida se é Estado Inicial
                 if (j == 0) {
-                    automato[q]['initialState'] = true;
+                    automatoMaquete[q]['initialState'] = true;
                 } else {
-                    automato[q]['initialState'] = false;
+                    automatoMaquete[q]['initialState'] = false;
                 }
                 
-                if(!(q in automato) || !(letra in automato[q])){
+                if(!(q in automatoMaquete) || !(letra in automatoMaquete[q])){
                     let nextState = automatoProprieties.qNum + 1;
-    
-                    automato[q][letra] = nextState;
-                    automato[nextState] = [];
+                    automatoMaquete[q][letra] = nextState;
+                    automatoMaquete[nextState] = [];
                     
                     q = nextState;
                     automatoProprieties.qNum = nextState;
     
                 } else {
-                    q = automato[q][letra];
+                    q = automatoMaquete[q][letra];
                 }
     
                 // Valida se é Estado Final
-                automato[q]['endState'] = (j == palavra.length - 1) ?? false;
+                automatoMaquete[q]["endState"] = j === palavra.length - 1;
             }
         }
     }
@@ -199,28 +200,28 @@ function setAutomato(){
 
     // Preenche a tabela com os dados
     const tbody = $('<tbody>');
-    for(let j = 0; j < automatoProprieties.automatoMaquete.length; j++){
+    for(let j = 0; j < automatoProprieties.automato.length; j++){
         const tr = $('<tr>');
         const td = $('<td>');
 
         // Apenas coloca -> para estado inicial e * para estado final
-        if(automato[j]['initialState']){
-            td.html('-> ' + 'q' + automatoProprieties.automatoMaquete[j]['qX']);
+        if(automatoMaquete[j]['initialState']){
+            td.html('->' + 'q' + automatoProprieties.automato[j]['qX']);
             td.addClass('end');
             tr.addClass('end');
         } else
-        if (automato[j]['endState']) {
-            td.html('* ' + 'q' + automatoProprieties.automatoMaquete[j]['qX']);
+        if (automatoMaquete[j]['endState']) {
+            td.html('*' + 'q' + automatoProprieties.automato[j]['qX']);
             td.addClass('end');
             tr.addClass('end');
         } else
-        if (automato[j]['initialState'] && automato[j]['endState']) {
-            td.html('-> ' + '* ' + 'q' + automatoProprieties.automatoMaquete[j]['qX']);
+        if (automatoMaquete[j]['initialState'] && automatoMaquete[j]['endState']) {
+            td.html('->' + '*' + 'q' + automatoProprieties.automato[j]['qX']);
             td.addClass('end');
             tr.addClass('end');
         } else
         {
-            td.html('q' + automatoProprieties.automatoMaquete[j]['qX']);
+            td.html('q' + automatoProprieties.automato[j]['qX']);
         }
 
         tr.append(td);
@@ -228,16 +229,16 @@ function setAutomato(){
 
         // Letras em cada quadrado
         for (var k = a; k <= z; k++) {
-            let innerCell = $('<td>');
+            let letterPlace = $('<td>');
             let letra = String.fromCharCode(k);
 
-            if (automatoProprieties.automatoMaquete[j][letra] == '-') {
-                innerCell.html(automatoProprieties.automatoMaquete[j][letra]);
+            if (automatoProprieties.automato[j][letra] === null) {
+                letterPlace.html('-');
             } else {
-                innerCell.html('q' + automatoProprieties.automatoMaquete[j][letra]);
+                letterPlace.html('q' + automatoProprieties.automato[j][letra]);
             }
 
-            tr.append(innerCell);
+            tr.append(letterPlace);
         }
         table.append(tbody);
 
@@ -256,52 +257,51 @@ function automatoValidation(palavra, last){
     if(palavra || last == 32 || last == 8){
         // Apenas valida se existirem palavras no automato
         if(automatoProprieties.palavras.length > 0){
+            let actualState = 0;
+            let error = false;
+
             $("#automato tr").removeClass('actual-state');
             $("#automato tr").removeClass('table-success');
             $("#automato tr").removeClass('table-danger');
-
-            let actualState = 0;
-            let error = false;
             
             for(let i = 0; i < palavra.length; i++){
                 let letra = palavra[i];
                 
                 if(!error){
+                    // Caso não tenha erro e a letra está dentro do alfabeto, valida se 
                     if(letra.charCodeAt(0) >= a && letra.charCodeAt(0) <= z){
-                        if(automatoProprieties.automatoMaquete[actualState][letra] != '-'){
-                            $("#automato tr").removeClass('actual-state');
-                            $(`.state${actualState}`).addClass('table-success');
-                            $(`.state${actualState}`).addClass('actual-state');
-                            actualState = automatoProprieties.automatoMaquete[actualState][letra];
-
+                        if(automatoProprieties.automato[actualState][letra] !== null){
                             $("#foundWords").empty();
                             $("#searchWordInput").css("box-shadow", "5px 5px 20px 10px green")
                             $("#foundWords").append(`<h5 class="text-light">Palavras Possíveis</h5>`);
-                        } else {
-                            error = true;
-                            $(`.state${actualState}`).addClass('table-danger');
+                            $("#automato tr").removeClass('actual-state');
+                            $(`.state${actualState}`).addClass('table-success');
+                            $(`.state${actualState}`).addClass('actual-state');
 
+                            actualState = automatoProprieties.automato[actualState][letra];
+                        } else {
                             $("#foundWords").empty();
                             $("#searchWordInput").css("box-shadow", "5px 5px 20px 10px red")
+                            $(`.state${actualState}`).addClass('table-danger')
+                            
+                            error = true;
                         }
                     }
 
-                    if(last == 32){
-                        if(i == palavra.length - 1){
-                            if(automatoProprieties.automatoMaquete[actualState]['endState']){
-                                $("#automato tr").removeClass('actual-state');
-                                $(`.state${actualState}`).addClass('table-success');
-                                $(`.state${actualState}`).addClass('actual-state');
+                    if(last == 32 && i == (palavra.length) - 1){
+                        if(automatoProprieties.automato[actualState]['endState']){
+                            $("#automato tr").removeClass('actual-state');
+                            $(`.state${actualState}`).addClass('table-success');
+                            $(`.state${actualState}`).addClass('actual-state');
 
-                                $("#foundWords").empty();
-                                $("#searchWordInput").css("box-shadow", "5px 5px 20px 10px green")
-                            } else {
-                                error = true;
-                                $(`.state${actualState}`).addClass('table-danger');
+                            $("#foundWords").empty();
+                            $("#searchWordInput").css("box-shadow", "5px 5px 20px 10px green")
+                        } else {
+                            $("#foundWords").empty();
+                            $("#searchWordInput").css("box-shadow", "5px 5px 20px 10px red")
+                            $(`.state${actualState}`).addClass('table-danger');
 
-                                $("#foundWords").empty();
-                                $("#searchWordInput").css("box-shadow", "5px 5px 20px 10px red")
-                            }
+                            error = true;
                         }
                     }
                 }
